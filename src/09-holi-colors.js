@@ -53,22 +53,65 @@
  *   // => { name: "red-blue", r: 128, g: 0, b: 128 }
  *   // red and blue objects are UNCHANGED
  */
+function isValidColor(c) {
+  return c && typeof c === 'object' && !Array.isArray(c) &&
+         typeof c.name === 'string' &&
+         typeof c.r === 'number' && !isNaN(c.r) &&
+         typeof c.g === 'number' && !isNaN(c.g) &&
+         typeof c.b === 'number' && !isNaN(c.b);
+}
+
 export function mixColors(color1, color2) {
-  // Your code here
+  if (!isValidColor(color1) || !isValidColor(color2)) {
+    return null;
+  }
+  const r = Math.round((color1.r + color2.r) / 2);
+  const g = Math.round((color1.g + color2.g) / 2);
+  const b = Math.round((color1.b + color2.b) / 2);
+  const name = `${color1.name}-${color2.name}`;
+  return { name, r, g, b };
 }
 
 export function adjustBrightness(color, factor) {
-  // Your code here
+  if (!isValidColor(color) || typeof factor !== 'number' || isNaN(factor)) {
+    return null;
+  }
+  const clamp = (val) => Math.max(0, Math.min(255, Math.round(val)));
+  const r = clamp(color.r * factor);
+  const g = clamp(color.g * factor);
+  const b = clamp(color.b * factor);
+  return { name: color.name, r, g, b };
 }
 
 export function addToPalette(palette, color) {
-  // Your code here
+  if (!Array.isArray(palette)) {
+    return isValidColor(color) ? [color] : [];
+  }
+  if (!isValidColor(color)) {
+    return [...palette];
+  }
+  return [...palette, color];
 }
 
 export function removeFromPalette(palette, colorName) {
-  // Your code here
+  if (!Array.isArray(palette)) {
+    return [];
+  }
+  if (typeof colorName !== 'string') {
+    return [...palette];
+  }
+  return palette.filter(c => c && c.name !== colorName);
 }
 
 export function mergePalettes(palette1, palette2) {
-  // Your code here
+  const p1 = Array.isArray(palette1) ? palette1 : [];
+  const p2 = Array.isArray(palette2) ? palette2 : [];
+  const merged = [...p1, ...p2];
+  const seen = new Set();
+  return merged.filter(c => {
+    if (!c || typeof c.name !== 'string') return false;
+    if (seen.has(c.name)) return false;
+    seen.add(c.name);
+    return true;
+  });
 }

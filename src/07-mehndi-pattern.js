@@ -53,21 +53,66 @@
  *   generatePattern(3)        // => ["*", "**", "***", "**", "*"]
  */
 export function repeatChar(char, n) {
-  // Your code here
+  if (typeof char !== 'string' || char === '') return "";
+  if (typeof n !== 'number' || isNaN(n) || n <= 0) return "";
+  return char + repeatChar(char, n - 1);
 }
 
 export function sumNestedArray(arr) {
-  // Your code here
+  if (!Array.isArray(arr) || arr.length === 0) {
+    return 0;
+  }
+  const first = arr[0];
+  const rest = arr.slice(1);
+  let firstVal = 0;
+  if (Array.isArray(first)) {
+    firstVal = sumNestedArray(first);
+  } else if (typeof first === 'number' && !isNaN(first)) {
+    firstVal = first;
+  }
+  return firstVal + sumNestedArray(rest);
 }
 
 export function flattenArray(arr) {
-  // Your code here
+  if (!Array.isArray(arr)) {
+    return [];
+  }
+  if (arr.length === 0) {
+    return [];
+  }
+  const first = arr[0];
+  const rest = arr.slice(1);
+  let firstFlat = Array.isArray(first) ? flattenArray(first) : [first];
+  return firstFlat.concat(flattenArray(rest));
 }
 
 export function isPalindrome(str) {
-  // Your code here
+  if (typeof str !== 'string') {
+    return false;
+  }
+  const lower = str.toLowerCase();
+  function checkPal(s) {
+    if (s.length <= 1) return true;
+    if (s.charAt(0) !== s.charAt(s.length - 1)) return false;
+    return checkPal(s.slice(1, -1));
+  }
+  return checkPal(lower);
 }
 
 export function generatePattern(n) {
-  // Your code here
+  if (typeof n !== 'number' || isNaN(n) || n <= 0 || !Number.isInteger(n)) {
+    return [];
+  }
+  
+  function build(current) {
+    if (current > n) return [];
+    const line = repeatChar("*", current);
+    if (current === n) {
+      return [line];
+    }
+    const rest = build(current + 1);
+    return [line, ...rest, line];
+  }
+  
+  return build(1);
 }
